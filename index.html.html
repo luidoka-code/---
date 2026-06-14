@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Калькулятор центрифуги: RCF ↔ об/мин</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #1e2a3e;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.02);
+            overflow: hidden;
+            padding: 24px 28px 36px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+            color: #0f3b5c;
+        }
+        .sub {
+            color: #2c6e9e;
+            border-left: 4px solid #2c6e9e;
+            padding-left: 14px;
+            margin-bottom: 28px;
+            font-weight: 400;
+            font-size: 0.95rem;
+        }
+        .formula-badge {
+            background: #eef2f7;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+            text-align: center;
+            word-break: break-word;
+        }
+        .card {
+            background: #f9fbfd;
+            border-radius: 24px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            border: 1px solid #e2edf7;
+        }
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #1e4663;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .input-field {
+            flex: 1;
+            min-width: 140px;
+        }
+        .input-field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4a627a;
+            margin-bottom: 6px;
+        }
+        .input-field input {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 1rem;
+            border: 1px solid #cbdde9;
+            border-radius: 20px;
+            background: white;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+        .input-field input:focus {
+            outline: none;
+            border-color: #2c6e9e;
+            box-shadow: 0 0 0 3px rgba(44,110,158,0.2);
+        }
+        .result {
+            background: #e6f4ea;
+            border-radius: 28px;
+            padding: 16px 24px;
+            text-align: center;
+            margin-top: 8px;
+            border: 1px solid #b8d9c5;
+        }
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1f6e43;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        .result-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #2c6e2f;
+        }
+        .note {
+            font-size: 0.75rem;
+            color: #6c86a3;
+            text-align: center;
+            margin-top: 24px;
+            border-top: 1px dashed #cbdde9;
+            padding-top: 18px;
+        }
+        button {
+            background: #2c6e9e;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+        button:hover {
+            background: #1b557d;
+        }
+        .flex-btns {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .table-radii {
+            font-size: 0.8rem;
+            background: white;
+            border-radius: 20px;
+            padding: 8px 12px;
+            border: 1px solid #e2edf7;
+        }
+        .table-radii table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-radii td {
+            padding: 6px 4px;
+        }
+        .badge {
+            background: #dceaf3;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1e4663;
+        }
+        @media (max-width: 550px) {
+            .container {
+                padding: 18px;
+            }
+            .result-value {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Расчет центрифуги</h1>
+    <div class="sub">RCF (g) ↔ частота вращения (об/мин)</div>
+    <div class="formula-badge">
+        <strong>RCF = 1,118 × 10⁻⁵ × R × N²</strong><br>
+        где R — радиус ротора (см), N — скорость вращения (об/мин)
+    </div>
+
+    <!-- Блок 1: Расчёт об/мин по RCF и радиусу -->
+    <div class="card">
+        <h3>Рассчитать об/мин по RCF</h3>
+        <div class="input-group">
+            <div class="input-field">
+                <label>Радиус ротора R (см)</label>
+                <input type="number" id="radius_rpm" value="15" step="0.5" placeholder="15">
+            </div>
+            <div class="input-field">
+                <label>Требуемое RCF (g)</label>
+                <input type="number" id="rcf_target" value="2000" step="100" placeholder="2000">
+            </div>
+        </div>
+        <div class="result" id="resultRPM">
+            <div class="result-label">Скорость вращения</div>
+            <div class="result-value" id="rpmValue">— об/мин</div>
+        </div>
+        <div class="flex-btns">
+            <button id="calcRpmBtn">Рассчитать об/мин</button>
+        </div>
+    </div>
+
+    <!-- Блок 2: Расчёт RCF по об/мин и радиусу -->
+    <div class="card">
+        <h3>Рассчитать RCF (g) по об/мин</h3>
+        <div class="input-group">
+            <div class="input-field">
+                <label>Радиус ротора R (см)</label>
+                <input type="number" id="radius_rcf" value="15" step="0.5">
+            </div>
+            <div class="input-field">
+                <label>Частота вращения N (об/мин)</label>
+                <input type="number" id="rpm_target" value="3450" step="50" placeholder="3450">
+            </div>
+        </div>
+        <div class="result" style="background:#f0f2f5; border-color:#d0dbe8;">
+            <div class="result-label">Относительное центробежное ускорение</div>
+            <div class="result-value" id="rcfValue">— g</div>
+        </div>
+        <div class="flex-btns">
+            <button id="calcRcfBtn">Рассчитать RCF</button>
+        </div>
+    </div>
+
+    <!-- Справочная таблица радиусов -->
+    <div class="table-radii">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span><span class="badge">Подсказка</span> Типичные радиусы роторов (от оси до дна пробирки):</span>
+        </div>
+        <table>
+            <tr><td>Микроцентрифуга (8-10 см)</td><td>8-10 см</td></tr>
+            <tr><td>Настольная центрифуга для пробирок 15 мл (12-16 см)</td><td>12-16 см</td></tr>
+            <tr><td>Ротор для пробирок 50 мл (14-18 см)</td><td>14-18 см</td></tr>
+            <tr><td>Высокоскоростная / низкотемпературная (8-12 см)</td><td>8-12 см</td></tr>
+            <tr><td>Большие бакетные роторы (16-20 см)</td><td>16-20 см</td></tr>
+        </table>
+        <div style="font-size:0.7rem; margin-top: 10px; color:#4a627a;">
+            * Измерьте точный радиус от центра вращения до дна пробирки для точного расчёта.
+        </div>
+    </div>
+
+    <div class="note">
+        Формула: RCF = 1,118 × 10⁻⁵ × R × N². Обратный расчёт: N = √[ RCF / (1,118 × 10⁻⁵ × R) ].<br>
+        Результаты округлены до целых об/мин и до 1 g.
+    </div>
+</div>
+
+<script>
+    const K = 1.118e-5;
+
+    function calculateRPM(radiusCm, targetRcf) {
+        if (!radiusCm || radiusCm <= 0) return null;
+        if (!targetRcf || targetRcf <= 0) return null;
+        const denominator = K * radiusCm;
+        if (denominator <= 0) return null;
+        const nSquared = targetRcf / denominator;
+        if (nSquared <= 0) return null;
+        const rpm = Math.sqrt(nSquared);
+        return Math.round(rpm);
+    }
+
+    function calculateRCF(radiusCm, rpm) {
+        if (!radiusCm || radiusCm <= 0) return null;
+        if (!rpm || rpm <= 0) return null;
+        const rcf = K * radiusCm * Math.pow(rpm, 2);
+        return Math.round(rcf);
+    }
+
+    const radiusRpmInput = document.getElementById('radius_rpm');
+    const rcfTargetInput = document.getElementById('rcf_target');
+    const rpmResultSpan = document.getElementById('rpmValue');
+    const calcRpmBtn = document.getElementById('calcRpmBtn');
+
+    const radiusRcfInput = document.getElementById('radius_rcf');
+    const rpmTargetInput = document.getElementById('rpm_target');
+    const rcfResultSpan = document.getElementById('rcfValue');
+    const calcRcfBtn = document.getElementById('calcRcfBtn');
+
+    function updateRPM() {
+        let radius = parseFloat(radiusRpmInput.value);
+        let rcfReq = parseFloat(rcfTargetInput.value);
+        if (isNaN(radius) || isNaN(rcfReq)) {
+            rpmResultSpan.innerText = '— об/мин';
+            return;
+        }
+        if (radius <= 0 || rcfReq <= 0) {
+            rpmResultSpan.innerText = 'Ошибка: значения > 0';
+            return;
+        }
+        const rpm = calculateRPM(radius, rcfReq);
+        rpmResultSpan.innerText = (rpm !== null) ? `${rpm} об/мин` : 'Ошибка ввода';
+    }
+
+    function updateRCF() {
+        let radius = parseFloat(radiusRcfInput.value);
+        let rpm = parseFloat(rpmTargetInput.value);
+        if (isNaN(radius) || isNaN(rpm)) {
+            rcfResultSpan.innerText = '— g';
+            return;
+        }
+        if (radius <= 0 || rpm <= 0) {
+            rcfResultSpan.innerText = 'Ошибка: значения > 0';
+            return;
+        }
+        const rcf = calculateRCF(radius, rpm);
+        rcfResultSpan.innerText = (rcf !== null) ? `${rcf} g` : 'Ошибка ввода';
+    }
+
+    calcRpmBtn.addEventListener('click', updateRPM);
+    calcRcfBtn.addEventListener('click', updateRCF);
+    radiusRpmInput.addEventListener('input', updateRPM);
+    rcfTargetInput.addEventListener('input', updateRPM);
+    radiusRcfInput.addEventListener('input', updateRCF);
+    rpmTargetInput.addEventListener('input', updateRCF);
+
+    radiusRpmInput.addEventListener('change', function() {
+        radiusRcfInput.value = radiusRpmInput.value;
+        updateRCF();
+    });
+    radiusRcfInput.addEventListener('change', function() {
+        radiusRpmInput.value = radiusRcfInput.value;
+        updateRPM();
+    });
+
+    updateRPM();
+    updateRCF();
+</script>
+</body>
+</html>
